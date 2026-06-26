@@ -1,13 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import { BackHandler, Alert } from 'react-native';
+import { BackHandler } from 'react-native';
 import { Chess } from 'chess.js';
 import ChessBoard from './components/ChessBoard';
 import MenuScreen from './components/MenuScreen';
 import SettingsScreen from './components/SettingsScreen';
 
-type Screen = 'mainMenu' | 'playMenu' | 'pauseMenu' | 'game' | 'settings';
+type Screen = 'mainMenu' | 'playMenu' | 'pauseMenu' | 'game' | 'settings' | 'options';
 
 type Mode = '1P' | '2P' | null;
+export type PieceTheme = 'classic' | 'jade' | 'ruby';
+export type PieceStyle = 'standard' | 'bold' | 'compact';
+export type BoardTheme = 'classic' | 'ocean' | 'forest';
+export type LevelType = 'easy' | 'medium' | 'hard';
 
 export default function App() {
   const [currentScreen, setCurrentScreen] = useState<Screen>('mainMenu');
@@ -15,6 +19,10 @@ export default function App() {
   const [isSoundOn, setIsSoundOn] = useState(true);
   const [mode, setMode] = useState<Mode>(null);
   const [gamePaused, setGamePaused] = useState(false);
+  const [pieceTheme, setPieceTheme] = useState<PieceTheme>('classic');
+  const [pieceStyle, setPieceStyle] = useState<PieceStyle>('standard');
+  const [boardTheme, setBoardTheme] = useState<BoardTheme>('classic');
+  const [levelType, setLevelType] = useState<LevelType>('easy');
 
   // Handle back button to pause game
   useEffect(() => {
@@ -41,10 +49,7 @@ export default function App() {
   };
 
   const handleExit = () => {
-    Alert.alert('Exit Game', 'Are you sure you want to exit?', [
-      { text: 'Cancel' },
-      { text: 'Exit', onPress: () => BackHandler.exitApp() },
-    ]);
+    BackHandler.exitApp();
   };
 
   const handleRestart = () => {
@@ -60,6 +65,7 @@ export default function App() {
       <MenuScreen
         screen="main"
         onPlay={() => setCurrentScreen('playMenu')}
+        onOptions={() => setCurrentScreen('options')}
         onSettings={() => setCurrentScreen('settings')}
         onExit={handleExit}
       />
@@ -87,8 +93,27 @@ export default function App() {
         onExit={() => {
           setGamePaused(false);
           setMode(null);
+          setGame(null);
           setCurrentScreen('mainMenu');
         }}
+        onExitGame={handleExit}
+      />
+    );
+  }
+
+  if (currentScreen === 'options') {
+    return (
+      <MenuScreen
+        screen="options"
+        pieceTheme={pieceTheme}
+        setPieceTheme={setPieceTheme}
+        pieceStyle={pieceStyle}
+        setPieceStyle={setPieceStyle}
+        boardTheme={boardTheme}
+        setBoardTheme={setBoardTheme}
+        levelType={levelType}
+        setLevelType={setLevelType}
+        onBack={() => setCurrentScreen('mainMenu')}
       />
     );
   }
@@ -126,6 +151,10 @@ export default function App() {
       }}
       isSoundOn={isSoundOn}
       mode={mode!}
+      pieceTheme={pieceTheme}
+      pieceStyle={pieceStyle}
+      boardTheme={boardTheme}
+      levelType={levelType}
     />
 
     );
@@ -134,6 +163,7 @@ export default function App() {
   return <MenuScreen
   screen="main"
   onPlay={() => setCurrentScreen('playMenu')}
+  onOptions={() => setCurrentScreen('options')}
   onSettings={() => setCurrentScreen('settings')}
   onExit={handleExit}
 />;

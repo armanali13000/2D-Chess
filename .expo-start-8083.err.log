@@ -1,0 +1,6 @@
+The following packages should be updated for best compatibility with the installed expo version:
+  expo@53.0.13 - expected version: ~53.0.27
+  expo-audio@0.4.7 - expected version: ~0.4.9
+  expo-av@15.1.6 - expected version: ~15.1.7
+  react-native@0.79.4 - expected version: 0.79.6
+Your project may not work correctly until you install the expected versions of the packages.
