@@ -9,7 +9,8 @@ import {
   ImageBackground,
 } from 'react-native';
 import { Chess, Square } from 'chess.js';
-import { Audio } from 'expo-av';
+import { createAudioPlayer } from 'expo-audio';
+import type { AudioPlayer } from 'expo-audio';
 import type { BoardTheme, LevelType, PieceStyle, PieceTheme } from '../App';
 
 const BOARD_SIZE = Dimensions.get('window').width - 20;
@@ -85,44 +86,46 @@ const ChessBoard: React.FC<Props> = ({
   const [selectedSquare, setSelectedSquare] = useState<Square | null>(null);
   const [validMoves, setValidMoves] = useState<Square[]>([]);
   const [board, setBoard] = useState(game.board());
-  const [moveSound, setMoveSound] = useState<Audio.Sound | null>(null);
-  const [winSound, setWinSound] = useState<Audio.Sound | null>(null);
-  const [checkSound, setCheckSound] = useState<Audio.Sound | null>(null);
+  const [moveSound, setMoveSound] = useState<AudioPlayer | null>(null);
+  const [winSound, setWinSound] = useState<AudioPlayer | null>(null);
+  const [checkSound, setCheckSound] = useState<AudioPlayer | null>(null);
   const [gameOverMessage, setGameOverMessage] = useState<string | null>(null);
   const [lastMove, setLastMove] = useState<{ from: Square; to: Square } | null>(null);
 
   useEffect(() => {
-    const loadSound = async () => {
-      if (!isSoundOn) return;
+    if (!isSoundOn) {
+      setMoveSound(null);
+      setWinSound(null);
+      setCheckSound(null);
+      return;
+    }
 
-      const { sound } = await Audio.Sound.createAsync(require('../assets/sounds/move.mp3'));
-      setMoveSound(sound);
+    const move = createAudioPlayer(require('../assets/sounds/move.mp3'));
+    const win = createAudioPlayer(require('../assets/sounds/win.mp3'));
+    const check = createAudioPlayer(require('../assets/sounds/check.mp3'));
 
-      const { sound: win } = await Audio.Sound.createAsync(require('../assets/sounds/win.mp3'));
-      setWinSound(win);
-
-      const { sound: check } = await Audio.Sound.createAsync(require('../assets/sounds/check.mp3'));
-      setCheckSound(check);
-    };
-
-    loadSound();
+    setMoveSound(move);
+    setWinSound(win);
+    setCheckSound(check);
 
     return () => {
-      moveSound?.unloadAsync();
-      winSound?.unloadAsync();
-      checkSound?.unloadAsync();
+      move.remove();
+      win.remove();
+      check.remove();
     };
   }, [isSoundOn]);
 
   const playCheckSound = async () => {
     if (isSoundOn && checkSound) {
-      await checkSound.replayAsync();
+      await checkSound.seekTo(0);
+      checkSound.play();
     }
   };
 
   const playMoveSound = async () => {
     if (isSoundOn && moveSound) {
-      await moveSound.replayAsync();
+      await moveSound.seekTo(0);
+      moveSound.play();
     }
   };
 
@@ -151,13 +154,22 @@ const ChessBoard: React.FC<Props> = ({
     if (game.isCheckmate()) {
       const winner = game.turn() === 'w' ? 'Black' : 'White';
       setGameOverMessage(`${winner} wins by checkmate!`);
-      if (isSoundOn && winSound) await winSound.replayAsync();
+      if (isSoundOn && winSound) {
+        await winSound.seekTo(0);
+        winSound.play();
+      }
     } else if (game.isStalemate()) {
       setGameOverMessage('Draw by stalemate!');
-      if (isSoundOn && winSound) await winSound.replayAsync();
+      if (isSoundOn && winSound) {
+        await winSound.seekTo(0);
+        winSound.play();
+      }
     } else if (game.isDraw()) {
       setGameOverMessage('Draw!');
-      if (isSoundOn && winSound) await winSound.replayAsync();
+      if (isSoundOn && winSound) {
+        await winSound.seekTo(0);
+        winSound.play();
+      }
     }
   };
 

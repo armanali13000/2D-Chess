@@ -10,7 +10,7 @@ import {
 } from 'react-native';
 
 const { width } = Dimensions.get('window');
-const APP_VERSION = '2.0.0';
+const APP_VERSION = '2.0.3';
 
 type Props = {
   isSoundOn: boolean;

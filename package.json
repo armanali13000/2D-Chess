@@ -1,6 +1,6 @@
 {
   "name": "2d chess",
-  "version": "2.0.0",
+  "version": "2.0.3",
   "main": "index.ts",
   "scripts": {
     "start": "expo start",
@@ -14,7 +14,6 @@
     "chess.js": "^1.4.0",
     "expo": "~53.0.13",
     "expo-audio": "~0.4.7",
-    "expo-av": "~15.1.6",
     "expo-status-bar": "~2.2.3",
     "react": "19.0.0",
     "react-native": "0.79.4",
