@@ -4,13 +4,11 @@ import {
   Text,
   TouchableOpacity,
   StyleSheet,
-  Dimensions,
   ImageBackground,
   ScrollView,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import type { BoardTheme, LevelType, PieceStyle, PieceTheme } from '../App';
-
-const { width } = Dimensions.get('window');
 
 type MenuScreenProps =
   | {
@@ -146,7 +144,7 @@ const MenuScreen: React.FC<MenuScreenProps> = (props) => {
       style={styles.background}
       resizeMode="cover"
     >
-      <View style={styles.overlay}>
+      <SafeAreaView style={styles.overlay}>
         <Text style={styles.gameTitle}>2D Chess</Text>
         <Text style={styles.title}>{title}</Text>
         {scrollable ? (
@@ -160,7 +158,7 @@ const MenuScreen: React.FC<MenuScreenProps> = (props) => {
         ) : (
           content
         )}
-      </View>
+      </SafeAreaView>
     </ImageBackground>
   );
 };
@@ -241,7 +239,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 40,
     borderRadius: 8,
     marginBottom: 14,
-    width: width * 0.7,
+    width: '70%',
+    maxWidth: 420,
     alignItems: 'center',
     borderWidth: 1,
     borderColor: 'rgba(255,255,255,0.18)',
@@ -274,7 +273,8 @@ const styles = StyleSheet.create({
     paddingBottom: 10,
   },
   optionGroup: {
-    width: width * 0.86,
+    width: '86%',
+    maxWidth: 560,
     marginBottom: 16,
   },
   optionTitle: {

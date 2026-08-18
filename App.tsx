@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { BackHandler } from 'react-native';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { Chess } from 'chess.js';
 import ChessBoard from './components/ChessBoard';
 import MenuScreen from './components/MenuScreen';
@@ -60,7 +61,106 @@ export default function App() {
 
   // =================== Screen Control ===================
 
-  if (currentScreen === 'mainMenu') {
+  const renderScreen = () => {
+    if (currentScreen === 'mainMenu') {
+      return (
+        <MenuScreen
+          screen="main"
+          onPlay={() => setCurrentScreen('playMenu')}
+          onOptions={() => setCurrentScreen('options')}
+          onSettings={() => setCurrentScreen('settings')}
+          onExit={handleExit}
+        />
+      );
+    }
+
+    if (currentScreen === 'playMenu') {
+      return (
+        <MenuScreen
+          screen="play"
+          onPlay1P={() => startGame('1P')}
+          onPlay2P={() => startGame('2P')}
+          onBack={() => setCurrentScreen('mainMenu')}
+        />
+      );
+    }
+
+    if (currentScreen === 'pauseMenu') {
+      return (
+        <MenuScreen
+          screen="pause"
+          onContinue={() => setCurrentScreen('game')}
+          onRestart={handleRestart}
+          onSettings={() => setCurrentScreen('settings')}
+          onExit={() => {
+            setGamePaused(false);
+            setMode(null);
+            setGame(null);
+            setCurrentScreen('mainMenu');
+          }}
+          onExitGame={handleExit}
+        />
+      );
+    }
+
+    if (currentScreen === 'options') {
+      return (
+        <MenuScreen
+          screen="options"
+          pieceTheme={pieceTheme}
+          setPieceTheme={setPieceTheme}
+          pieceStyle={pieceStyle}
+          setPieceStyle={setPieceStyle}
+          boardTheme={boardTheme}
+          setBoardTheme={setBoardTheme}
+          levelType={levelType}
+          setLevelType={setLevelType}
+          onBack={() => setCurrentScreen('mainMenu')}
+        />
+      );
+    }
+
+    if (currentScreen === 'settings') {
+      return (
+        <SettingsScreen
+          isSoundOn={isSoundOn}
+          setIsSoundOn={setIsSoundOn}
+          onBack={() => {
+            if (gamePaused) {
+              setCurrentScreen('pauseMenu');
+            } else {
+              setCurrentScreen('mainMenu');
+            }
+          }}
+        />
+      );
+    }
+
+    if (currentScreen === 'game' && game) {
+      return (
+        <ChessBoard
+          game={game}
+          setGame={setGame}
+          onBack={() => {
+            setGamePaused(true);
+            setCurrentScreen('pauseMenu');
+          }}
+          onExitToMenu={() => {
+            setGame(null);
+            setMode(null);
+            setGamePaused(false);
+            setCurrentScreen('mainMenu');
+          }}
+          isSoundOn={isSoundOn}
+          mode={mode!}
+          pieceTheme={pieceTheme}
+          pieceStyle={pieceStyle}
+          boardTheme={boardTheme}
+          levelType={levelType}
+        />
+      );
+    }
+
     return (
       <MenuScreen
         screen="main"
@@ -70,101 +170,7 @@ export default function App() {
         onExit={handleExit}
       />
     );
-  }
+  };
 
-  if (currentScreen === 'playMenu') {
-    return (
-      <MenuScreen
-        screen="play"
-        onPlay1P={() => startGame('1P')}
-        onPlay2P={() => startGame('2P')}
-        onBack={() => setCurrentScreen('mainMenu')}
-      />
-    );
-  }
-
-  if (currentScreen === 'pauseMenu') {
-    return (
-      <MenuScreen
-        screen="pause"
-        onContinue={() => setCurrentScreen('game')}
-        onRestart={handleRestart}
-        onSettings={() => setCurrentScreen('settings')}
-        onExit={() => {
-          setGamePaused(false);
-          setMode(null);
-          setGame(null);
-          setCurrentScreen('mainMenu');
-        }}
-        onExitGame={handleExit}
-      />
-    );
-  }
-
-  if (currentScreen === 'options') {
-    return (
-      <MenuScreen
-        screen="options"
-        pieceTheme={pieceTheme}
-        setPieceTheme={setPieceTheme}
-        pieceStyle={pieceStyle}
-        setPieceStyle={setPieceStyle}
-        boardTheme={boardTheme}
-        setBoardTheme={setBoardTheme}
-        levelType={levelType}
-        setLevelType={setLevelType}
-        onBack={() => setCurrentScreen('mainMenu')}
-      />
-    );
-  }
-
-  if (currentScreen === 'settings') {
-    return (
-      <SettingsScreen
-        isSoundOn={isSoundOn}
-        setIsSoundOn={setIsSoundOn}
-        onBack={() => {
-          if (gamePaused) {
-            setCurrentScreen('pauseMenu');
-          } else {
-            setCurrentScreen('mainMenu');
-          }
-        }}
-      />
-    );
-  }
-
-  if (currentScreen === 'game' && game) {
-    return (
-      <ChessBoard
-      game={game}
-      setGame={setGame}
-      onBack={() => {
-        setGamePaused(true);
-        setCurrentScreen('pauseMenu');
-      }}
-      onExitToMenu={() => {
-        setGame(null);
-        setMode(null);
-        setGamePaused(false);
-        setCurrentScreen('mainMenu');
-      }}
-      isSoundOn={isSoundOn}
-      mode={mode!}
-      pieceTheme={pieceTheme}
-      pieceStyle={pieceStyle}
-      boardTheme={boardTheme}
-      levelType={levelType}
-    />
-
-    );
-  }
-
-  return <MenuScreen
-  screen="main"
-  onPlay={() => setCurrentScreen('playMenu')}
-  onOptions={() => setCurrentScreen('options')}
-  onSettings={() => setCurrentScreen('settings')}
-  onExit={handleExit}
-/>;
+  return <SafeAreaProvider>{renderScreen()}</SafeAreaProvider>;
 }

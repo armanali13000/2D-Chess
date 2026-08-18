@@ -4,17 +4,15 @@ import {
   Image,
   TouchableOpacity,
   StyleSheet,
-  Dimensions,
   Text,
   ImageBackground,
+  useWindowDimensions,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { Chess, Square } from 'chess.js';
 import { createAudioPlayer } from 'expo-audio';
 import type { AudioPlayer } from 'expo-audio';
 import type { BoardTheme, LevelType, PieceStyle, PieceTheme } from '../App';
-
-const BOARD_SIZE = Dimensions.get('window').width - 20;
-const TILE_SIZE = BOARD_SIZE / 8;
 
 const PIECE_VALUES: Record<string, number> = {
   p: 100,
@@ -91,6 +89,9 @@ const ChessBoard: React.FC<Props> = ({
   const [checkSound, setCheckSound] = useState<AudioPlayer | null>(null);
   const [gameOverMessage, setGameOverMessage] = useState<string | null>(null);
   const [lastMove, setLastMove] = useState<{ from: Square; to: Square } | null>(null);
+  const { width, height } = useWindowDimensions();
+  const boardSize = Math.min(width - 20, height * 0.68, 620);
+  const tileSize = boardSize / 8;
 
   useEffect(() => {
     if (!isSoundOn) {
@@ -282,13 +283,13 @@ const ChessBoard: React.FC<Props> = ({
       style={styles.background}
       resizeMode="cover"
     >
-      <View style={styles.overlay}>
-        <View style={styles.statusBar}>
+      <SafeAreaView style={styles.overlay}>
+        <View style={[styles.statusBar, { width: boardSize }]}>
           <Text style={styles.statusText}>{mode === '1P' ? `AI: ${levelType}` : 'Friend Match'}</Text>
           <Text style={styles.statusText}>{game.turn() === 'w' ? 'White' : 'Black'} to move</Text>
         </View>
 
-        <View style={styles.board}>
+        <View style={[styles.board, { width: boardSize, height: boardSize }]}>
           {board.map((row, rowIndex) => (
             <View key={rowIndex} style={styles.row}>
               {row.map((square, colIndex) => {
@@ -311,19 +312,45 @@ const ChessBoard: React.FC<Props> = ({
                     onPress={() => handleSquarePress(rowIndex, colIndex)}
                     style={[
                       styles.tile,
-                      { backgroundColor: isLastMoveSquare ? theme.last : isLight ? theme.light : theme.dark },
+                      {
+                        width: tileSize,
+                        height: tileSize,
+                        backgroundColor: isLastMoveSquare ? theme.last : isLight ? theme.light : theme.dark,
+                      },
                     ]}
                   >
-                    {isValidMoveSquare && <View style={styles.validCircle} />}
-                    {isSelected && <View style={styles.selectedCircle} />}
+                    {isValidMoveSquare && (
+                      <View
+                        style={[
+                          styles.validCircle,
+                          {
+                            width: tileSize * 0.42,
+                            height: tileSize * 0.42,
+                            borderRadius: tileSize * 0.21,
+                          },
+                        ]}
+                      />
+                    )}
+                    {isSelected && (
+                      <View
+                        style={[
+                          styles.selectedCircle,
+                          {
+                            width: tileSize * 0.82,
+                            height: tileSize * 0.82,
+                            borderRadius: tileSize * 0.41,
+                          },
+                        ]}
+                      />
+                    )}
                     {square && (
                       <Image
                         source={pieceImages[square.color + square.type]}
                         style={[
                           styles.piece,
                           {
-                            width: TILE_SIZE * pieceLook.scale,
-                            height: TILE_SIZE * pieceLook.scale,
+                            width: tileSize * pieceLook.scale,
+                            height: tileSize * pieceLook.scale,
                             opacity: pieceLook.opacity,
                             tintColor: pieceTint,
                           },
@@ -363,15 +390,13 @@ const ChessBoard: React.FC<Props> = ({
             </View>
           </View>
         )}
-      </View>
+      </SafeAreaView>
     </ImageBackground>
   );
 };
 
 const styles = StyleSheet.create({
   board: {
-    width: BOARD_SIZE,
-    height: BOARD_SIZE,
     borderRadius: 8,
     overflow: 'hidden',
     borderWidth: 3,
@@ -381,8 +406,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
   },
   tile: {
-    width: TILE_SIZE,
-    height: TILE_SIZE,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -394,16 +417,10 @@ const styles = StyleSheet.create({
   },
   validCircle: {
     position: 'absolute',
-    width: TILE_SIZE * 0.42,
-    height: TILE_SIZE * 0.42,
-    borderRadius: TILE_SIZE * 0.21,
     backgroundColor: 'rgba(55, 150, 68, 0.42)',
   },
   selectedCircle: {
     position: 'absolute',
-    width: TILE_SIZE * 0.82,
-    height: TILE_SIZE * 0.82,
-    borderRadius: TILE_SIZE * 0.41,
     backgroundColor: 'rgba(74, 144, 226, 0.36)',
   },
   buttons: {
@@ -471,7 +488,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
   },
   statusBar: {
-    width: BOARD_SIZE,
     flexDirection: 'row',
     justifyContent: 'space-between',
     backgroundColor: 'rgba(20, 24, 32, 0.82)',

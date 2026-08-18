@@ -4,13 +4,12 @@ import {
   Text,
   TouchableOpacity,
   StyleSheet,
-  Dimensions,
   ImageBackground,
   ScrollView,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
-const { width } = Dimensions.get('window');
-const APP_VERSION = '2.0.3';
+const APP_VERSION = '2.0.4';
 
 type Props = {
   isSoundOn: boolean;
@@ -28,7 +27,7 @@ const SettingsScreen: React.FC<Props> = ({ isSoundOn, setIsSoundOn, onBack }) =>
         style={styles.background}
         resizeMode="cover"
       >
-        <View style={styles.overlay}>
+        <SafeAreaView style={styles.overlay}>
           <Text style={styles.title}>Privacy Policy</Text>
 
           <ScrollView
@@ -69,7 +68,7 @@ const SettingsScreen: React.FC<Props> = ({ isSoundOn, setIsSoundOn, onBack }) =>
           >
             <Text style={styles.buttonText}>Back</Text>
           </TouchableOpacity>
-        </View>
+        </SafeAreaView>
       </ImageBackground>
     );
   }
@@ -80,7 +79,7 @@ const SettingsScreen: React.FC<Props> = ({ isSoundOn, setIsSoundOn, onBack }) =>
       style={styles.background}
       resizeMode="cover"
     >
-      <View style={styles.overlay}>
+      <SafeAreaView style={styles.overlay}>
         <Text style={styles.title}>Settings</Text>
 
         <View style={styles.settingRow}>
@@ -113,7 +112,7 @@ const SettingsScreen: React.FC<Props> = ({ isSoundOn, setIsSoundOn, onBack }) =>
         <TouchableOpacity activeOpacity={0.82} style={styles.button} onPress={onBack}>
           <Text style={styles.buttonText}>Back</Text>
         </TouchableOpacity>
-      </View>
+      </SafeAreaView>
     </ImageBackground>
   );
 };
@@ -146,13 +145,15 @@ const styles = StyleSheet.create({
     paddingHorizontal: 40,
     borderRadius: 8,
     marginBottom: 14,
-    width: width * 0.72,
+    width: '72%',
+    maxWidth: 440,
     alignItems: 'center',
     borderWidth: 1,
     borderColor: 'rgba(255,255,255,0.18)',
   },
   settingRow: {
-    width: width * 0.72,
+    width: '72%',
+    maxWidth: 440,
     minHeight: 58,
     backgroundColor: 'rgba(20, 24, 32, 0.88)',
     borderRadius: 8,
@@ -214,7 +215,8 @@ const styles = StyleSheet.create({
     fontWeight: '700',
   },
   infoPanel: {
-    width: width * 0.72,
+    width: '72%',
+    maxWidth: 440,
     backgroundColor: 'rgba(255,255,255,0.12)',
     borderWidth: 1,
     borderColor: 'rgba(255,255,255,0.16)',
@@ -231,7 +233,8 @@ const styles = StyleSheet.create({
     marginVertical: 2,
   },
   privacyPanel: {
-    width: width * 0.84,
+    width: '84%',
+    maxWidth: 560,
     maxHeight: '62%',
     backgroundColor: 'rgba(20, 24, 32, 0.88)',
     borderRadius: 8,

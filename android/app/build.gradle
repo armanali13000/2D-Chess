@@ -92,8 +92,8 @@ android {
         applicationId 'com.armanix.chess'
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion 36
-        versionCode 5
-        versionName "2.0.3"
+        versionCode 6
+        versionName "2.0.4"
     }
     signingConfigs {
         debug {
