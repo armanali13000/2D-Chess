@@ -9,7 +9,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-const APP_VERSION = '2.0.4';
+const APP_VERSION = '2.0.6';
 
 type Props = {
   isSoundOn: boolean;

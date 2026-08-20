@@ -2,7 +2,7 @@
   "expo": {
     "name": "2D Chess",
     "slug": "2D-Chess",
-    "version": "2.0.4",
+    "version": "2.0.6",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
     "newArchEnabled": false,
@@ -16,7 +16,7 @@
     },
     "android": {
       "package": "com.armanix.chess",
-      "versionCode": 6,
+      "versionCode": 8,
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
